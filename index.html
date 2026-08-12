@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f3ec">
+  <title>联合家化产品电子书｜专题6</title>
+  <link rel="icon" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="menuBtn" class="icon-btn" aria-label="打开目录">目录</button>
+    <div class="heading"><strong id="pageTitle">联合家化产品电子书</strong><span id="pageMeta">专题6</span></div>
+    <button id="homeBtn" class="icon-btn" aria-label="返回主目录">主目录</button>
+  </header>
+  <main id="viewer" class="viewer" aria-live="polite">
+    <button id="prevTap" class="tap-zone left" aria-label="上一页"></button>
+    <figure class="page"><img id="pageImage" alt="" draggable="false"><div id="hotspots" class="hotspots"></div><div id="loading">正在加载…</div></figure>
+    <button id="nextTap" class="tap-zone right" aria-label="下一页"></button>
+  </main>
+  <nav class="bottomnav" aria-label="阅读导航">
+    <button id="prevBtn">上一页</button><span id="counter">1 / 23</span><button id="nextBtn">下一页</button>
+  </nav>
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-head"><strong>产品目录</strong><button id="closeBtn" aria-label="关闭目录">关闭</button></div>
+    <label class="search"><span>搜索</span><input id="search" type="search" placeholder="输入品牌或产品系列"></label>
+    <div id="toc" class="toc"></div>
+  </aside>
+  <div id="shade" class="shade" hidden></div>
+  <script>
+const pages = [
+  {id:"COVER",title:"封面",section:"全书",src:"pages/COVER.jpg"},
+  {id:"DIR-001",title:"产品主目录",section:"全书",src:"pages/DIR-001.jpg"},
+  {id:"SEC-JZ",title:"健字产品专区",section:"健字",src:"pages/SEC-JZ.jpg"},
+  {id:"JZ-P001",title:"健字气雾剂系列",section:"健字",src:"pages/JZ-P001.jpg"},
+  {id:"JZ-P002",title:"免拆桶装蚊香",section:"健字",src:"pages/JZ-P002.jpg"},
+  {id:"JZ-P003",title:"电热蚊香液系列（一）",section:"健字",src:"pages/JZ-P003.jpg"},
+  {id:"JZ-P004",title:"电热蚊香液系列（二）",section:"健字",src:"pages/JZ-P004.jpg"},
+  {id:"JZ-P005",title:"电热蚊香片系列",section:"健字",src:"pages/JZ-P005.jpg"},
+  {id:"JZ-P006",title:"片香直插器",section:"健字",src:"pages/JZ-P006.jpg"},
+  {id:"JZ-P007",title:"盘式蚊香系列",section:"健字",src:"pages/JZ-P007.jpg"},
+  {id:"SEC-YJ",title:"鹰剑产品专区",section:"鹰剑",src:"pages/SEC-YJ.jpg"},
+  {id:"YJ-P001",title:"电热驱蚊系列",section:"鹰剑",src:"pages/YJ-P001.jpg"},
+  {id:"YJ-P002",title:"超大盘宝宝方塑蚊香",section:"鹰剑",src:"pages/YJ-P002.jpg"},
+  {id:"YJ-P003",title:"气雾剂系列（一）",section:"鹰剑",src:"pages/YJ-P003.jpg"},
+  {id:"YJ-P004",title:"气雾剂系列（二）",section:"鹰剑",src:"pages/YJ-P004.jpg"},
+  {id:"SEC-JGB",title:"金箍棒产品专区",section:"金箍棒",src:"pages/SEC-JGB.jpg"},
+  {id:"JGB-P001",title:"金箍棒气雾剂系列",section:"金箍棒",src:"pages/JGB-P001.jpg"},
+  {id:"JGB-P002",title:"金箍棒电热蚊香液系列",section:"金箍棒",src:"pages/JGB-P002.jpg"},
+  {id:"SEC-LS",title:"力沙产品专区（原图待补）",section:"力沙",src:"pages/SEC-LS.jpg"},
+  {id:"SEC-HC",title:"家庭日化产品专区",section:"家庭日化",src:"pages/SEC-HC.jpg"},
+  {id:"HC-P001",title:"花露水系列",section:"家庭日化",src:"pages/HC-P001.jpg"},
+  {id:"HC-P002",title:"健字厕净（柠檬香）",section:"家庭日化",src:"pages/HC-P002.jpg"},
+  {id:"HC-P003",title:"空气清新剂系列",section:"家庭日化",src:"pages/HC-P003.jpg"}
+];
+const byId = Object.fromEntries(pages.map((p,i)=>[p.id,i]));
+let current = Math.max(0, byId[location.hash.slice(1)] ?? 0);
+const image = document.querySelector('#pageImage');
+const hotspots = document.querySelector('#hotspots');
+const loading = document.querySelector('#loading');
+const drawer = document.querySelector('#drawer');
+const shade = document.querySelector('#shade');
+const toc = document.querySelector('#toc');
+function preload(i) { if (pages[i]) { const x=new Image(); x.src=pages[i].src; } }
+const links = {
+  'COVER': [[0,0,100,100,'DIR-001','进入产品目录']],
+  'DIR-001': [
+    [7.4,20.8,85.2,10.7,'SEC-JZ','进入健字专区'],[7.4,33.6,85.2,10.7,'SEC-YJ','进入鹰剑专区'],
+    [7.4,46.4,85.2,10.7,'SEC-JGB','进入金箍棒专区'],[7.4,59.2,85.2,10.7,'SEC-LS','进入力沙专区'],
+    [7.4,72.0,85.2,10.7,'SEC-HC','进入家庭日化专区']],
+  'SEC-JZ': ['JZ-P001','JZ-P002','JZ-P003','JZ-P004','JZ-P005','JZ-P006','JZ-P007'],
+  'SEC-YJ': ['YJ-P001','YJ-P002','YJ-P003','YJ-P004'],
+  'SEC-JGB': ['JGB-P001','JGB-P002'],
+  'SEC-HC': ['HC-P001','HC-P002','HC-P003']
+};
+function sectionLinks(ids) { return ids.map((id,n)=>[7.4+(n%2)*44.3,21.1+Math.floor(n/2)*14.3,40.9,12.2,id,'进入'+pages[byId[id]].title]); }
+function renderHotspots(p) {
+  hotspots.innerHTML=''; let items=links[p.id]||[]; if(items.length && typeof items[0]==='string') items=sectionLinks(items);
+  items.forEach(([x,y,w,h,target,label])=>{const b=document.createElement('button');b.className='hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);b.onclick=()=>show(byId[target]);hotspots.append(b);});
+}
+function show(i, push=true) {
+  current=Math.max(0,Math.min(pages.length-1,i)); const p=pages[current]; loading.hidden=false; image.classList.remove('ready');
+  image.onload=()=>{loading.hidden=true;image.classList.add('ready')}; image.src=p.src; image.alt=p.title;
+  document.querySelector('#pageTitle').textContent=p.title; document.querySelector('#pageMeta').textContent=p.section;
+  document.querySelector('#counter').textContent=`${current+1} / ${pages.length}`;
+  renderHotspots(p);
+  document.querySelector('#prevBtn').disabled=current===0; document.querySelector('#nextBtn').disabled=current===pages.length-1;
+  toc.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.id===p.id));
+  if(push) history.replaceState(null,'','#'+p.id); preload(current-1); preload(current+1);
+}
+function closeDrawer() {drawer.setAttribute('aria-hidden','true');shade.hidden=true;}
+function openDrawer() {drawer.setAttribute('aria-hidden','false');shade.hidden=false;}
+function buildToc(filter='') {
+  const q=filter.trim().toLowerCase(); toc.innerHTML=''; let last='';
+  pages.forEach((p,i)=>{ if(q && !(p.title+p.section+p.id).toLowerCase().includes(q)) return;
+    if(p.section!==last){const h=document.createElement('h2');h.textContent=p.section;toc.append(h);last=p.section;}
+    const b=document.createElement('button');b.dataset.id=p.id;b.innerHTML=`<span>${p.title}</span><small>${String(i+1).padStart(2,'0')}</small>`;
+    b.onclick=()=>{show(i);closeDrawer();};toc.append(b);
+  }); show(current,false);
+}
+document.querySelector('#menuBtn').onclick=openDrawer; document.querySelector('#closeBtn').onclick=closeDrawer; shade.onclick=closeDrawer;
+document.querySelector('#homeBtn').onclick=()=>show(byId['DIR-001']); document.querySelector('#prevBtn').onclick=()=>show(current-1);
+document.querySelector('#nextBtn').onclick=()=>show(current+1); document.querySelector('#prevTap').onclick=()=>show(current-1);
+document.querySelector('#nextTap').onclick=()=>show(current+1); document.querySelector('#search').oninput=e=>buildToc(e.target.value);
+addEventListener('hashchange',()=>show(byId[location.hash.slice(1)]??current,false));
+let sx=0;document.querySelector('#viewer').addEventListener('touchstart',e=>sx=e.changedTouches[0].clientX,{passive:true});
+document.querySelector('#viewer').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>60)show(current+(dx<0?1:-1));},{passive:true});
+buildToc(); show(current,false); if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js');
+  </script>
+</body></html>
