@@ -1,0 +1,10 @@
+联合家化产品电子书｜专题6 H5 发布说明
+
+GitHub Pages：
+1. 新建GitHub仓库。
+2. 将本文件夹内全部文件上传到仓库根目录，确保 index.html 位于根目录。
+3. 进入 Settings > Pages。
+4. Source 选择 Deploy from a branch。
+5. Branch 选择 main，目录选择 / (root)，保存并等待发布。
+
+电脑可直接打开 index.html 检查静态画面；完整缓存与手机正式测试应通过HTTPS网址进行。
