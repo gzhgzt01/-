@@ -77,16 +77,17 @@ const links = {
     [7.4,22.4,85.2,12.3,'ENT-INTRO','进入企业篇'],[7.4,37.2,85.2,12.3,'SEC-JZ','进入品牌与产品'],
     [7.4,52.1,85.2,12.3,'COOP-001','进入招商合作'],[7.4,66.9,85.2,12.3,'CONTACT','进入联系方式']],
   'ENT-MARKET': [[7.4,77.0,85.2,8.5,'SEC-JZ','查看品牌与产品']],
+  'ENT-STRENGTH': [[10.5,56.5,79,25,'@cert','点击查看资质证书大图']],
   'SEC-JZ': ['JZ-P001','JZ-P002','JZ-P003','JZ-P004','JZ-P005','JZ-P006','JZ-P007'],
   'SEC-YJ': ['YJ-P001','YJ-P002','YJ-P003','YJ-P004'],
   'SEC-JGB': ['JGB-P001','JGB-P002'],
   'SEC-HC': ['HC-P001','HC-P002','HC-P003'],
-  'CONTACT': [[7.4,87.5,85.2,6.5,'DIR-001','返回全书主目录']]
+  'CONTACT': [[7.4,43.5,85.2,12,'@tel','拨打0312-2161615'],[7.4,87.5,85.2,6.5,'DIR-001','返回全书主目录']]
 };
 function sectionLinks(ids) { return ids.map((id,n)=>[7.4+(n%2)*44.3,21.1+Math.floor(n/2)*14.3,40.9,12.2,id,'进入'+pages[byId[id]].title]); }
 function renderHotspots(p) {
   hotspots.innerHTML=''; let items=links[p.id]||[]; if(items.length && typeof items[0]==='string') items=sectionLinks(items);
-  items.forEach(([x,y,w,h,target,label])=>{const b=document.createElement('button');b.className='hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);b.onclick=()=>show(byId[target]);hotspots.append(b);});
+  items.forEach(([x,y,w,h,target,label])=>{const b=document.createElement('button');b.className='hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);b.onclick=()=>{if(target==='@tel'){location.href='tel:03122161615';return}if(target==='@cert'){window.open('assets/河北省科技型中小企业_SKX202508E0630030.jpg','_blank');return}show(byId[target])};hotspots.append(b);});
 }
 function show(i, push=true) {
   current=Math.max(0,Math.min(pages.length-1,i)); const p=pages[current]; loading.hidden=false; image.classList.remove('ready');
