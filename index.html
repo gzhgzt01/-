@@ -24,15 +24,18 @@
     <button id="prevBtn">上一页</button><span id="counter">1 / 23</span><button id="nextBtn">下一页</button>
   </nav>
   <aside id="drawer" class="drawer" aria-hidden="true">
-    <div class="drawer-head"><strong>产品目录</strong><button id="closeBtn" aria-label="关闭目录">关闭</button></div>
-    <label class="search"><span>搜索</span><input id="search" type="search" placeholder="输入品牌或产品系列"></label>
+    <div class="drawer-head"><strong>全书目录</strong><button id="closeBtn" aria-label="关闭目录">关闭</button></div>
+    <label class="search"><span>搜索</span><input id="search" type="search" placeholder="输入企业、品牌、产品或合作内容"></label>
     <div id="toc" class="toc"></div>
   </aside>
   <div id="shade" class="shade" hidden></div>
   <script>
 const pages = [
   {id:"COVER",title:"封面",section:"全书",src:"pages/COVER.jpg"},
-  {id:"DIR-001",title:"产品主目录",section:"全书",src:"pages/DIR-001.jpg"},
+  {id:"ENT-INTRO",title:"企业介绍",section:"企业篇",src:"pages/ENT-INTRO.jpg"},
+  {id:"ENT-STRENGTH",title:"企业实力",section:"企业篇",src:"pages/ENT-STRENGTH.jpg"},
+  {id:"ENT-MARKET",title:"市场布局",section:"企业篇",src:"pages/ENT-MARKET.jpg"},
+  {id:"DIR-001",title:"全书主目录",section:"全书",src:"pages/DIR-001.jpg"},
   {id:"SEC-JZ",title:"健字产品专区",section:"健字",src:"pages/SEC-JZ.jpg"},
   {id:"JZ-P001",title:"健字气雾剂系列",section:"健字",src:"pages/JZ-P001.jpg"},
   {id:"JZ-P002",title:"免拆桶装蚊香",section:"健字",src:"pages/JZ-P002.jpg"},
@@ -53,7 +56,11 @@ const pages = [
   {id:"SEC-HC",title:"家庭日化产品专区",section:"家庭日化",src:"pages/SEC-HC.jpg"},
   {id:"HC-P001",title:"花露水系列",section:"家庭日化",src:"pages/HC-P001.jpg"},
   {id:"HC-P002",title:"健字厕净（柠檬香）",section:"家庭日化",src:"pages/HC-P002.jpg"},
-  {id:"HC-P003",title:"空气清新剂系列",section:"家庭日化",src:"pages/HC-P003.jpg"}
+  {id:"HC-P003",title:"空气清新剂系列",section:"家庭日化",src:"pages/HC-P003.jpg"},
+  {id:"COOP-001",title:"选择联合家化",section:"招商合作",src:"pages/COOP-001.jpg"},
+  {id:"COOP-002",title:"渠道合作价值",section:"招商合作",src:"pages/COOP-002.jpg"},
+  {id:"COOP-003",title:"合作模式",section:"招商合作",src:"pages/COOP-003.jpg"},
+  {id:"CONTACT",title:"联系方式",section:"联系我们",src:"pages/CONTACT.jpg"}
 ];
 const byId = Object.fromEntries(pages.map((p,i)=>[p.id,i]));
 let current = Math.max(0, byId[location.hash.slice(1)] ?? 0);
@@ -65,15 +72,16 @@ const shade = document.querySelector('#shade');
 const toc = document.querySelector('#toc');
 function preload(i) { if (pages[i]) { const x=new Image(); x.src=pages[i].src; } }
 const links = {
-  'COVER': [[0,0,100,100,'DIR-001','进入产品目录']],
+  'COVER': [[0,0,100,100,'DIR-001','进入全书主目录']],
   'DIR-001': [
-    [7.4,20.8,85.2,10.7,'SEC-JZ','进入健字专区'],[7.4,33.6,85.2,10.7,'SEC-YJ','进入鹰剑专区'],
-    [7.4,46.4,85.2,10.7,'SEC-JGB','进入金箍棒专区'],[7.4,59.2,85.2,10.7,'SEC-LS','进入力沙专区'],
-    [7.4,72.0,85.2,10.7,'SEC-HC','进入家庭日化专区']],
+    [7.4,22.4,85.2,12.3,'ENT-INTRO','进入企业篇'],[7.4,37.2,85.2,12.3,'SEC-JZ','进入品牌与产品'],
+    [7.4,52.1,85.2,12.3,'COOP-001','进入招商合作'],[7.4,66.9,85.2,12.3,'CONTACT','进入联系方式']],
+  'ENT-MARKET': [[7.4,77.0,85.2,8.5,'SEC-JZ','查看品牌与产品']],
   'SEC-JZ': ['JZ-P001','JZ-P002','JZ-P003','JZ-P004','JZ-P005','JZ-P006','JZ-P007'],
   'SEC-YJ': ['YJ-P001','YJ-P002','YJ-P003','YJ-P004'],
   'SEC-JGB': ['JGB-P001','JGB-P002'],
-  'SEC-HC': ['HC-P001','HC-P002','HC-P003']
+  'SEC-HC': ['HC-P001','HC-P002','HC-P003'],
+  'CONTACT': [[7.4,87.5,85.2,6.5,'DIR-001','返回全书主目录']]
 };
 function sectionLinks(ids) { return ids.map((id,n)=>[7.4+(n%2)*44.3,21.1+Math.floor(n/2)*14.3,40.9,12.2,id,'进入'+pages[byId[id]].title]); }
 function renderHotspots(p) {
