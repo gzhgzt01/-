@@ -11,7 +11,7 @@
 </head>
 <body>
   <header class="topbar">
-    <button id="menuBtn" class="icon-btn" aria-label="打开目录">目录</button>
+    <button id="menuBtn" class="icon-btn" aria-label="打开搜索">搜索</button>
     <div class="heading"><strong id="pageTitle">联合家化产品电子书</strong><span id="pageMeta">专题6</span></div>
     <button id="homeBtn" class="icon-btn" aria-label="返回主目录">主目录</button>
   </header>
@@ -98,10 +98,12 @@ function sectionLinks(ids) { return ids.map((id,n)=>[7.4+(n%2)*44.3,21.1+Math.fl
 function renderHotspots(p) {
   hotspots.innerHTML=''; let items=links[p.id]||[]; if(items.length && typeof items[0]==='string') items=sectionLinks(items);
   if(p.id==='COVER') items=[];
-  items.forEach(([x,y,w,h,target,label])=>{const b=document.createElement('button');b.className='hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);if(label&&label.includes('进入')){const t=document.createElement('span');t.className='pulse-link';t.innerHTML='进入 <span class="pulse-arrow">→</span>';b.append(t)}b.onclick=()=>{if(target==='@tel'){location.href='tel:03122161615';return}if(target.startsWith('@asset:')){window.open('assets/'+encodeURIComponent(target.slice(7)),'_blank');return}show(byId[target])};hotspots.append(b);});
+  items.forEach(([x,y,w,h,target,label])=>{const b=document.createElement('button');b.className='hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);if(p.id!=='SEC-JZ'&&label&&label.includes('进入')){const t=document.createElement('span');t.className='pulse-link';t.innerHTML='进入 <span class="pulse-arrow">→</span>';b.append(t)}b.onclick=()=>{if(target==='@tel'){location.href='tel:03122161615';return}if(target.startsWith('@asset:')){window.open('assets/'+encodeURIComponent(target.slice(7)),'_blank');return}show(byId[target])};hotspots.append(b);});
   const ids=productImages[p.id];if(ids){const pos=productLayout[ids.length];ids.forEach((n,i)=>{const [x,y,w,h]=pos[i];const b=document.createElement('button');b.className='hotspot product-hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label','点击放大产品图片 IMG_'+n);b.onclick=e=>{e.stopPropagation();openLightbox('assets/products/IMG_'+n+'.jpg','真实产品图片 IMG_'+n)};hotspots.append(b)})}
-  if(p.id==='COVER'){const b=document.createElement('button');b.className='cover-pulse';b.textContent='进入全书主目录　→';b.onclick=()=>show(byId['DIR-001']);hotspots.append(b)}
-  if(p.id==='ENT-MARKET'){const b=document.createElement('span');b.className='market-pulse';b.textContent='查看品牌与产品　→';hotspots.append(b)}
+  if(p.id==='COVER'){const b=document.createElement('button');b.className='cover-pulse';b.textContent='进入全书主目录';b.onclick=()=>show(byId['DIR-001']);hotspots.append(b)}
+  if(p.id==='ENT-MARKET'){const b=document.createElement('span');b.className='market-pulse';b.textContent='查看品牌与产品';hotspots.append(b)}
+  if(p.id==='SEC-JZ'){const t=document.createElement('div');t.className='choose-product-tip';t.innerHTML='<span>☝</span><strong>点击方框选择产品</strong>';hotspots.append(t)}
+  if(ids){const t=document.createElement('div');t.className='product-zoom-tip';t.textContent='点击图片可放大';hotspots.append(t)}
 }
 function show(i, push=true) {
   current=Math.max(0,Math.min(pages.length-1,i)); const p=pages[current]; loading.hidden=false; image.classList.remove('ready');
