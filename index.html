@@ -41,6 +41,7 @@ const pages = [
   {id:"JZ-P001B",title:"健字气雾剂系列（二）",section:"健字",src:"pages/JZ-P001B.jpg"},
   {id:"JZ-P008",title:"健字呋虫胺系列",section:"健字",src:"pages/JZ-P008.jpg"},
   {id:"JZ-P002",title:"免拆桶装蚊香",section:"健字",src:"pages/JZ-P002.jpg"},
+  {id:"JZ-P010",title:"大盘桶装蚊香",section:"健字",src:"pages/JZ-P010.jpg"},
   {id:"JZ-P003",title:"电热蚊香液系列（一）",section:"健字",src:"pages/JZ-P003.jpg"},
   {id:"JZ-P004",title:"电热蚊香液系列（二）",section:"健字",src:"pages/JZ-P004.jpg"},
   {id:"JZ-P005",title:"电热蚊香片系列",section:"健字",src:"pages/JZ-P005.jpg"},
@@ -54,7 +55,7 @@ const pages = [
   {id:"SEC-JGB",title:"金箍棒产品专区",section:"金箍棒",src:"pages/SEC-JGB.jpg"},
   {id:"JGB-P001",title:"金箍棒气雾剂系列",section:"金箍棒",src:"pages/JGB-P001.jpg"},
   {id:"JGB-P002",title:"金箍棒电热蚊香液系列",section:"金箍棒",src:"pages/JGB-P002.jpg"},
-  {id:"SEC-LS",title:"力沙产品专区（原图待补）",section:"力沙",src:"pages/SEC-LS.jpg"},
+  {id:"SEC-LS",title:"力沙气雾杀虫剂",section:"力沙",src:"pages/SEC-LS.jpg"},
   {id:"SEC-HC",title:"家庭日化产品专区",section:"家庭日化",src:"pages/SEC-HC.jpg"},
   {id:"HC-P001",title:"花露水系列",section:"家庭日化",src:"pages/HC-P001.jpg"},
   {id:"HC-P002",title:"健字厕净（柠檬香）",section:"家庭日化",src:"pages/HC-P002.jpg"},
@@ -81,7 +82,7 @@ const links = {
     [7.4,52.1,85.2,12.3,'COOP-001','进入招商合作'],[7.4,66.9,85.2,12.3,'CONTACT','进入联系方式']],
   'ENT-MARKET': [[7.4,77.0,85.2,8.5,'SEC-JZ','查看品牌与产品']],
   'ENT-INTRO': [[10.2,36.7,38,14.8,'@asset:营业执照.jpg','查看营业执照大图'],[51.8,36.7,38,14.8,'@asset:农药生产许可证.jpg','查看农药生产许可证大图'],[10.2,51.9,38,14.8,'@asset:农药登记证_代表证.jpg','查看农药登记证大图'],[51.8,51.9,38,14.8,'@asset:河北省科技型中小企业.jpg','查看科技型中小企业证书大图']],
-  'SEC-JZ': ['JZ-P001','JZ-P001B','JZ-P008','JZ-P002','JZ-P003','JZ-P004','JZ-P005','JZ-P007'],
+  'SEC-JZ': ['JZ-P001','JZ-P001B','JZ-P008','JZ-P002','JZ-P010','JZ-P003','JZ-P004','JZ-P005','JZ-P007'],
   'SEC-YJ': ['YJ-P001','YJ-P002','YJ-P003','YJ-P004'],
   'SEC-JGB': ['JGB-P001','JGB-P002'],
   'SEC-HC': ['HC-P001','HC-P002','HC-P003'],
@@ -89,19 +90,20 @@ const links = {
 };
 const productImages={
  'JZ-P001':['015','018','025','022'],'JZ-P001B':['016','017','026'],'JZ-P008':['A80','A77'],'JZ-P002':['063','064'],
- 'JZ-P003':['089','006','007','003'],'JZ-P004':['058','053'],'JZ-P005':['008','004','005','A24'],'JZ-P007':['A08','083','088','081'],'JZ-P009':['A79'],
- 'YJ-P001':['049','050','059','060'],'YJ-P002':['045'],'YJ-P003':['013','018','020','023'],'YJ-P004':['021'],
+ 'JZ-P010':['JZB1','JZB2'],'JZ-P003':['089','006','007','003'],'JZ-P004':['058','053'],'JZ-P005':['008','004','005','A24'],'JZ-P007':['A08','083','088','081'],'JZ-P009':['A79'],
+ 'YJ-P001':['049','050','059','060'],'YJ-P002':['045','B07'],'YJ-P003':['B03','020','023'],'YJ-P004':['B01','021'],'SEC-LS':['D01'],
  'JGB-P001':['091','024','027'],'JGB-P002':['071','070','068','069'],'HC-P001':['035','067','065'],'HC-P002':['010'],'HC-P003':['030','028','029','031']};
 const productLayout={4:[[7.4,21.3,40.9,28.6],[51.7,21.3,40.9,28.6],[7.4,51.9,40.9,28.6],[51.7,51.9,40.9,28.6]],3:[[7.4,21.3,40.9,28.6],[51.7,21.3,40.9,28.6],[29.5,51.9,40.9,28.6]],2:[[7.4,21.5,85.2,26.8],[7.4,50.5,85.2,26.8]],1:[[7.4,21.5,85.2,55.0]]};
+const productPositions={'YJ-P002':[[7.4,26.0,40.9,34.0],[51.7,26.0,40.9,34.0]],'YJ-P004':[[7.4,26.0,40.9,34.0],[51.7,26.0,40.9,34.0]]};
 function openLightbox(src,label){lightboxImage.src=src;lightboxImage.alt=label;lightboxCaption.textContent=label;lightbox.hidden=false;document.body.classList.add('modal-open')}
 function closeLightbox(){lightbox.hidden=true;lightboxImage.src='';document.body.classList.remove('modal-open')}
 function sectionLinks(ids) { return ids.map((id,n)=>[(ids.length%2===1&&n===ids.length-1)?29.5:7.4+(n%2)*44.3,21.1+Math.floor(n/2)*14.3,40.9,12.2,id,'进入'+pages[byId[id]].title]); }
-function sectionLinksJz(ids) { return ids.map((id,n)=>[6.5+(n%2)*48.1,20.3+Math.floor(n/2)*15.1,38.9,10.9,id,'进入'+pages[byId[id]].title]); }
+function sectionLinksJz(ids) { return ids.map((id,n)=>[(ids.length%2===1&&n===ids.length-1)?30.5:6.5+(n%2)*48.1,19.3+Math.floor(n/2)*12.8,38.9,10.9,id,'进入'+pages[byId[id]].title]); }
 function renderHotspots(p) {
   hotspots.innerHTML=''; let items=links[p.id]||[]; if(items.length && typeof items[0]==='string') items=p.id==='SEC-JZ'?sectionLinksJz(items):sectionLinks(items);
   if(p.id==='COVER') items=[];
-  items.forEach(([x,y,w,h,target,label])=>{const b=document.createElement('button');b.className='hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);if(p.id!=='SEC-JZ'&&label&&label.includes('进入')){const t=document.createElement('span');t.className='pulse-link';t.innerHTML='进入 <span class="pulse-arrow">→</span>';b.append(t)}b.onclick=()=>{if(target==='@tel'){location.href='tel:03122161615';return}if(target.startsWith('@asset:')){window.open('assets/'+encodeURIComponent(target.slice(7)),'_blank');return}show(byId[target])};hotspots.append(b);});
-  const ids=productImages[p.id];if(ids){const pos=p.id==='JZ-P008'?[[7.4,31.8,40.9,33.9],[51.7,31.8,40.9,33.9]]:productLayout[ids.length];ids.forEach((n,i)=>{const [x,y,w,h]=pos[i];const b=document.createElement('button');b.className='hotspot product-hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label','点击放大产品图片 '+n);b.onclick=e=>{e.stopPropagation();openLightbox('assets/products/IMG_'+n+'.jpg','真实产品图片 '+n)};hotspots.append(b)})}
+  items.forEach(([x,y,w,h,target,label])=>{const b=document.createElement('button');b.className='hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);if(p.id!=='SEC-JZ'&&p.id!=='BRANDS'&&label&&label.includes('进入')){const t=document.createElement('span');t.className='pulse-link';t.innerHTML='进入 <span class="pulse-arrow">→</span>';b.append(t)}b.onclick=()=>{if(target==='@tel'){location.href='tel:03122161615';return}if(target.startsWith('@asset:')){window.open('assets/'+encodeURIComponent(target.slice(7)),'_blank');return}show(byId[target])};hotspots.append(b);});
+  const ids=productImages[p.id];if(ids){const pos=productPositions[p.id]||(p.id==='JZ-P008'?[[7.4,31.8,40.9,33.9],[51.7,31.8,40.9,33.9]]:productLayout[ids.length]);ids.forEach((n,i)=>{const [x,y,w,h]=pos[i];const b=document.createElement('button');b.className='hotspot product-hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label','点击放大产品图片 '+n);b.onclick=e=>{e.stopPropagation();openLightbox('assets/products/IMG_'+n+'.jpg','真实产品图片 '+n)};hotspots.append(b)})}
   if(p.id==='COVER'){const b=document.createElement('button');b.className='cover-pulse';b.textContent='进入全书主目录';b.onclick=()=>show(byId['DIR-001']);hotspots.append(b)}
   if(p.id==='ENT-MARKET'){const b=document.createElement('span');b.className='market-pulse';b.textContent='查看品牌与产品';hotspots.append(b)}
   if(p.id==='SEC-JZ'){const t=document.createElement('div');t.className='choose-product-tip';t.innerHTML='<span>☝</span><strong>点击方框选择产品</strong>';hotspots.append(t)}
