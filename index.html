@@ -91,10 +91,10 @@ const links = {
 const productImages={
  'JZ-P001':['015','018','025','022'],'JZ-P001B':['016','017','026'],'JZ-P008':['A80','A77'],'JZ-P002':['063','064'],
  'JZ-P010':['JZB1','JZB2'],'JZ-P003':['089','006','007','003'],'JZ-P004':['058','053'],'JZ-P005':['008','004','005','A24'],'JZ-P007':['A08','083','088','081'],'JZ-P009':['A79'],
- 'YJ-P001':['049','050','059','060'],'YJ-P002':['045','B07'],'YJ-P003':['B03','020','023'],'YJ-P004':['B01','021'],'SEC-LS':['D01'],
+ 'YJ-P001':['049','050','059','060'],'YJ-P002':['045','B07'],'YJ-P003':['B03','020','023','B01'],'YJ-P004':['021'],'SEC-LS':['D01'],
  'JGB-P001':['091','024','027'],'JGB-P002':['071','070','068','069'],'HC-P001':['035','067','065'],'HC-P002':['010'],'HC-P003':['030','028','029','031']};
 const productLayout={4:[[7.4,21.3,40.9,28.6],[51.7,21.3,40.9,28.6],[7.4,51.9,40.9,28.6],[51.7,51.9,40.9,28.6]],3:[[7.4,21.3,40.9,28.6],[51.7,21.3,40.9,28.6],[29.5,51.9,40.9,28.6]],2:[[7.4,21.5,85.2,26.8],[7.4,50.5,85.2,26.8]],1:[[7.4,21.5,85.2,55.0]]};
-const productPositions={'YJ-P002':[[7.4,26.0,40.9,34.0],[51.7,26.0,40.9,34.0]],'YJ-P004':[[7.4,26.0,40.9,34.0],[51.7,26.0,40.9,34.0]]};
+const productPositions={'YJ-P002':[[7.4,26.0,40.9,34.0],[51.7,26.0,40.9,34.0]],'YJ-P004':[[29.5,26.0,40.9,34.0]]};
 function openLightbox(src,label){lightboxImage.src=src;lightboxImage.alt=label;lightboxCaption.textContent=label;lightbox.hidden=false;document.body.classList.add('modal-open')}
 function closeLightbox(){lightbox.hidden=true;lightboxImage.src='';document.body.classList.remove('modal-open')}
 function sectionLinks(ids) { return ids.map((id,n)=>[(ids.length%2===1&&n===ids.length-1)?29.5:7.4+(n%2)*44.3,21.1+Math.floor(n/2)*14.3,40.9,12.2,id,'进入'+pages[byId[id]].title]); }
