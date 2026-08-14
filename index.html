@@ -59,6 +59,8 @@ const pages = [
   {id:"SEC-HC",title:"家庭日化产品专区",section:"家庭日化",src:"pages/SEC-HC.jpg"},
   {id:"HC-P001",title:"花露水系列",section:"家庭日化",src:"pages/HC-P001.jpg"},
   {id:"HC-P002",title:"健字厕净（柠檬香）",section:"家庭日化",src:"pages/HC-P002.jpg"},
+  {id:"HC-P004",title:"厨房油污净系列",section:"家庭日化",src:"pages/HC-P004.jpg"},
+  {id:"HC-P005",title:"清洁系列",section:"家庭日化",src:"pages/HC-P005.jpg"},
   {id:"HC-P003",title:"空气清新剂系列",section:"家庭日化",src:"pages/HC-P003.jpg"},
   {id:"COOP-001",title:"选择联合家化",section:"招商合作",src:"pages/COOP-001.jpg"},
   {id:"COOP-002",title:"渠道合作价值",section:"招商合作",src:"pages/COOP-002.jpg"},
@@ -85,16 +87,16 @@ const links = {
   'SEC-JZ': ['JZ-P001','JZ-P001B','JZ-P008','JZ-P002','JZ-P010','JZ-P003','JZ-P004','JZ-P005','JZ-P007'],
   'SEC-YJ': ['YJ-P001','YJ-P002','YJ-P003','YJ-P004'],
   'SEC-JGB': ['JGB-P001','JGB-P002'],
-  'SEC-HC': ['HC-P001','HC-P002','HC-P003'],
+  'SEC-HC': ['HC-P001','HC-P002','HC-P004','HC-P005','HC-P003'],
   'CONTACT': [[7.4,43.5,85.2,12,'@tel','拨打0312-2161615'],[7.4,87.5,85.2,6.5,'DIR-001','返回全书主目录']]
 };
 const productImages={
  'JZ-P001':['015','018','025','022'],'JZ-P001B':['016','017','026'],'JZ-P008':['A80','A77'],'JZ-P002':['063','064'],
  'JZ-P010':['JZB1','JZB2'],'JZ-P003':['089','006','007','003'],'JZ-P004':['058','053'],'JZ-P005':['008','004','005','A24'],'JZ-P007':['A08','083','088','081'],'JZ-P009':['A79'],
  'YJ-P001':['049','050','059','060'],'YJ-P002':['045','B07'],'YJ-P003':['B03','020','023','B01'],'YJ-P004':['021'],'SEC-LS':['D01'],
- 'JGB-P001':['091','024','027'],'JGB-P002':['071','070','068','069'],'HC-P001':['035','067','065'],'HC-P002':['010'],'HC-P003':['030','028','029','031']};
+ 'JGB-P001':['091','024','027'],'JGB-P002':['071','070','068','069'],'HC-P001':['035','067','065'],'HC-P002':['010','A51','A67'],'HC-P004':['A57'],'HC-P005':['A60','A61','A76'],'HC-P003':['030','028','029','031']};
 const productLayout={4:[[7.4,21.3,40.9,28.6],[51.7,21.3,40.9,28.6],[7.4,51.9,40.9,28.6],[51.7,51.9,40.9,28.6]],3:[[7.4,21.3,40.9,28.6],[51.7,21.3,40.9,28.6],[29.5,51.9,40.9,28.6]],2:[[7.4,21.5,85.2,26.8],[7.4,50.5,85.2,26.8]],1:[[7.4,21.5,85.2,55.0]]};
-const productPositions={'YJ-P002':[[7.4,26.0,40.9,34.0],[51.7,26.0,40.9,34.0]],'YJ-P004':[[29.5,26.0,40.9,34.0]]};
+const productPositions={'YJ-P002':[[7.4,26.0,40.9,34.0],[51.7,26.0,40.9,34.0]],'YJ-P004':[[29.5,26.0,40.9,34.0]],'HC-P004':[[29.5,26.0,40.9,34.0]]};
 function openLightbox(src,label){lightboxImage.src=src;lightboxImage.alt=label;lightboxCaption.textContent=label;lightbox.hidden=false;document.body.classList.add('modal-open')}
 function closeLightbox(){lightbox.hidden=true;lightboxImage.src='';document.body.classList.remove('modal-open')}
 function sectionLinks(ids) { return ids.map((id,n)=>[(ids.length%2===1&&n===ids.length-1)?29.5:7.4+(n%2)*44.3,21.1+Math.floor(n/2)*14.3,40.9,12.2,id,'进入'+pages[byId[id]].title]); }
