@@ -29,7 +29,7 @@
     <div id="toc" class="toc"></div>
   </aside>
   <div id="shade" class="shade" hidden></div>
-  <div id="lightbox" class="lightbox" hidden><button id="lightboxClose" aria-label="关闭放大图片">×</button><img id="lightboxImage" alt=""><div id="lightboxCaption"></div></div>
+  <div id="lightbox" class="lightbox" hidden><button id="lightboxClose" aria-label="关闭放大图片">×</button><img id="lightboxImage" alt=""><div id="lightboxMeta"><span id="lightboxCaption"></span><span id="lightboxCounter" hidden></span></div></div>
   <audio id="pageTurnAudio" preload="none" playsinline src="assets/audio/page-turn.wav"></audio>
   <script>
 const pages = [
@@ -72,7 +72,7 @@ let current = Math.max(0, byId[location.hash.slice(1)] ?? 0);
 const image = document.querySelector('#pageImage');
 const hotspots = document.querySelector('#hotspots');
 const loading = document.querySelector('#loading');
-const lightbox=document.querySelector('#lightbox'),lightboxImage=document.querySelector('#lightboxImage'),lightboxCaption=document.querySelector('#lightboxCaption');
+const lightbox=document.querySelector('#lightbox'),lightboxImage=document.querySelector('#lightboxImage'),lightboxCaption=document.querySelector('#lightboxCaption'),lightboxCounter=document.querySelector('#lightboxCounter');
 const drawer = document.querySelector('#drawer');
 const shade = document.querySelector('#shade');
 const toc = document.querySelector('#toc');
@@ -133,15 +133,19 @@ const productImages={
  'JGB-P001':['091','024','027'],'JGB-P002':['071','070','068','069'],'HC-P001':['035','067','065'],'HC-P002':['010','A51','A67'],'HC-P004':['A57','A71'],'HC-P005':['A60','A61','A76','A73'],'HC-P003':['030','028','029','031'],'HC-P006':['A86','A88','A85']};
 const productLayout={4:[[7.4,21.3,40.9,28.6],[51.7,21.3,40.9,28.6],[7.4,51.9,40.9,28.6],[51.7,51.9,40.9,28.6]],3:[[7.4,21.3,40.9,28.6],[51.7,21.3,40.9,28.6],[29.5,51.9,40.9,28.6]],2:[[7.4,21.5,85.2,26.8],[7.4,50.5,85.2,26.8]],1:[[7.4,21.5,85.2,55.0]]};
 const productPositions={'YJ-P002':[[7.4,26.0,40.9,34.0],[51.7,26.0,40.9,34.0]],'YJ-P004':[[29.5,26.0,40.9,34.0]],'HC-P004':[[7.4,26.0,40.9,34.0],[51.7,26.0,40.9,34.0]]};
-function openLightbox(src,label){lightboxImage.src=src;lightboxImage.alt=label;lightboxCaption.textContent=label;lightbox.hidden=false;document.body.classList.add('modal-open')}
-function closeLightbox(){lightbox.hidden=true;lightboxImage.src='';document.body.classList.remove('modal-open')}
+let lightboxItems=[],lightboxIndex=0;
+function renderLightbox(){const item=lightboxItems[lightboxIndex];if(!item)return;lightboxImage.src=item.src;lightboxImage.alt=item.label;lightboxCaption.textContent=item.label;const multiple=lightboxItems.length>1;lightboxCounter.hidden=!multiple;lightboxCounter.textContent=multiple?`${lightboxIndex+1} / ${lightboxItems.length}`:'';[-1,1].forEach(d=>{const next=lightboxItems[lightboxIndex+d];if(next){const x=new Image();x.src=next.src}})}
+function openLightboxGallery(items,index=0){lightboxItems=items.slice();lightboxIndex=Math.max(0,Math.min(lightboxItems.length-1,index));renderLightbox();lightbox.hidden=false;document.body.classList.add('modal-open')}
+function moveLightbox(delta){const next=Math.max(0,Math.min(lightboxItems.length-1,lightboxIndex+delta));if(next===lightboxIndex)return;lightboxIndex=next;renderLightbox()}
+function closeLightbox(){lightbox.hidden=true;lightboxImage.src='';lightboxItems=[];lightboxIndex=0;document.body.classList.remove('modal-open')}
 function sectionLinks(ids) { return ids.map((id,n)=>[(ids.length%2===1&&n===ids.length-1)?29.5:7.4+(n%2)*44.3,21.1+Math.floor(n/2)*14.3,40.9,12.2,id,'进入'+pages[byId[id]].title]); }
 function sectionLinksJz(ids) { return ids.map((id,n)=>[(ids.length%2===1&&n===ids.length-1)?30.5:6.5+(n%2)*48.1,19.3+Math.floor(n/2)*12.8,38.9,10.9,id,'进入'+pages[byId[id]].title]); }
 function renderHotspots(p) {
   hotspots.innerHTML=''; let items=links[p.id]||[]; if(items.length && typeof items[0]==='string') items=p.id==='SEC-JZ'?sectionLinksJz(items):sectionLinks(items);
   if(p.id==='COVER') items=[];
-  items.forEach(([x,y,w,h,target,label],itemIndex)=>{const b=document.createElement('button');b.className='hotspot';if(p.id==='SEC-HC'&&itemIndex>=4)b.classList.add('hc-lower-entry');b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);if(p.id!=='SEC-JZ'&&p.id!=='BRANDS'&&label&&label.includes('进入')){const t=document.createElement('span');t.className='pulse-link';t.innerHTML='进入 <span class="pulse-arrow">→</span>';b.append(t)}b.onclick=()=>{if(target==='@tel'){location.href='tel:03122161615';return}if(target.startsWith('@asset:')){window.open('assets/'+encodeURIComponent(target.slice(7)),'_blank');return}show(byId[target])};hotspots.append(b);});
-  const ids=productImages[p.id];if(ids){const pos=productPositions[p.id]||(p.id==='JZ-P008'?[[7.4,31.8,40.9,33.9],[51.7,31.8,40.9,33.9]]:productLayout[ids.length]);ids.forEach((n,i)=>{const [x,y,w,h]=pos[i];const b=document.createElement('button');b.className='hotspot product-hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label','点击放大产品图片 '+n);b.onclick=e=>{e.stopPropagation();openLightbox('assets/products/IMG_'+n+'.jpg','真实产品图片 '+n)};hotspots.append(b)})}
+  const assetGallery=items.filter(item=>item[4].startsWith('@asset:')).map(item=>({src:'assets/'+encodeURIComponent(item[4].slice(7)),label:item[5]}));
+  items.forEach(([x,y,w,h,target,label],itemIndex)=>{const b=document.createElement('button');b.className='hotspot';if(p.id==='SEC-HC'&&itemIndex>=4)b.classList.add('hc-lower-entry');b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);if(p.id!=='SEC-JZ'&&p.id!=='BRANDS'&&label&&label.includes('进入')){const t=document.createElement('span');t.className='pulse-link';t.innerHTML='进入 <span class="pulse-arrow">→</span>';b.append(t)}b.onclick=()=>{if(target==='@tel'){location.href='tel:03122161615';return}if(target.startsWith('@asset:')){const galleryIndex=assetGallery.findIndex(item=>item.src==='assets/'+encodeURIComponent(target.slice(7)));openLightboxGallery(assetGallery,galleryIndex);return}show(byId[target])};hotspots.append(b);});
+  const ids=productImages[p.id];if(ids){const gallery=ids.map(n=>({src:'assets/products/IMG_'+n+'.jpg',label:'真实产品图片 '+n}));const pos=productPositions[p.id]||(p.id==='JZ-P008'?[[7.4,31.8,40.9,33.9],[51.7,31.8,40.9,33.9]]:productLayout[ids.length]);ids.forEach((n,i)=>{const [x,y,w,h]=pos[i];const b=document.createElement('button');b.className='hotspot product-hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label','点击放大产品图片 '+n);b.onclick=e=>{e.stopPropagation();openLightboxGallery(gallery,i)};hotspots.append(b)})}
   if(p.id==='COVER'){const sound=document.createElement('button');sound.className='sound-toggle';sound.type='button';sound.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="speaker" d="M4 9v6h4l5 4V5L8 9H4z"/><path class="waves" d="M16 8.2c1 .9 1.5 2.2 1.5 3.8s-.5 2.9-1.5 3.8M18.6 5.7c1.7 1.6 2.6 3.7 2.6 6.3s-.9 4.7-2.6 6.3"/><path class="mute" d="m16.5 9 5 6m0-6-5 6"/></svg><span></span>';updateSoundButton(sound);sound.onclick=e=>{e.stopPropagation();toggleSound(sound)};hotspots.append(sound);const b=document.createElement('button');b.className='cover-pulse';b.textContent='进入全书主目录';b.onclick=()=>show(byId['DIR-001']);hotspots.append(b)}
   if(p.id==='ENT-MARKET'){const b=document.createElement('span');b.className='market-pulse';b.textContent='查看品牌与产品';hotspots.append(b)}
   if(p.id==='SEC-JZ'){const t=document.createElement('div');t.className='choose-product-tip';t.innerHTML='<span>☝</span><strong>点击方框选择产品</strong>';hotspots.append(t)}
@@ -179,6 +183,8 @@ function buildToc(filter='') {
 document.querySelector('#menuBtn').onclick=openDrawer; document.querySelector('#closeBtn').onclick=closeDrawer; shade.onclick=closeDrawer;
 document.querySelector('#homeBtn').onclick=()=>show(byId['DIR-001']); document.querySelector('#prevBtn').onclick=()=>show(current-1);
 document.querySelector('#lightboxClose').onclick=closeLightbox;lightbox.onclick=e=>{if(e.target===lightbox)closeLightbox()};
+let lightboxSwipeX=0;lightbox.addEventListener('touchstart',e=>{lightboxSwipeX=e.changedTouches[0].clientX},{passive:true});lightbox.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-lightboxSwipeX;if(lightboxItems.length>1&&Math.abs(dx)>45)moveLightbox(dx<0?1:-1)},{passive:true});
+addEventListener('keydown',e=>{if(lightbox.hidden)return;if(e.key==='Escape')closeLightbox();if(e.key==='ArrowLeft')moveLightbox(-1);if(e.key==='ArrowRight')moveLightbox(1)});
 document.querySelector('#nextBtn').onclick=()=>show(current+1); document.querySelector('#prevTap').onclick=()=>show(current-1);
 document.querySelector('#nextTap').onclick=()=>show(current+1); document.querySelector('#search').oninput=e=>buildToc(e.target.value);
 addEventListener('hashchange',()=>show(byId[location.hash.slice(1)]??current,false));
