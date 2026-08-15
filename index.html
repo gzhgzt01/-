@@ -30,6 +30,7 @@
   </aside>
   <div id="shade" class="shade" hidden></div>
   <div id="lightbox" class="lightbox" hidden><button id="lightboxClose" aria-label="关闭放大图片">×</button><img id="lightboxImage" alt=""><div id="lightboxCaption"></div></div>
+  <audio id="pageTurnAudio" preload="none" playsinline src="assets/audio/page-turn.wav"></audio>
   <script>
 const pages = [
   {id:"COVER",title:"封面",section:"全书",src:"pages/COVER.jpg"},
@@ -75,6 +76,42 @@ const lightbox=document.querySelector('#lightbox'),lightboxImage=document.queryS
 const drawer = document.querySelector('#drawer');
 const shade = document.querySelector('#shade');
 const toc = document.querySelector('#toc');
+const pageTurnAudio = document.querySelector('#pageTurnAudio');
+const SOUND_SESSION_KEY = 'topic6-page-turn-sound';
+let soundEnabled = false;
+try { soundEnabled = sessionStorage.getItem(SOUND_SESSION_KEY) === 'on'; } catch (_) {}
+pageTurnAudio.volume = .18;
+function storeSoundPreference() {
+  try { sessionStorage.setItem(SOUND_SESSION_KEY, soundEnabled ? 'on' : 'off'); } catch (_) {}
+}
+function stopPageTurnSound() {
+  pageTurnAudio.pause();
+  try { pageTurnAudio.currentTime = 0; } catch (_) {}
+}
+function playPageTurnSound() {
+  if (!soundEnabled) return;
+  stopPageTurnSound();
+  const playback = pageTurnAudio.play();
+  if (playback) playback.catch(() => {});
+}
+function updateSoundButton(button) {
+  button.setAttribute('aria-pressed', String(soundEnabled));
+  button.setAttribute('aria-label', soundEnabled ? '关闭翻页声音' : '开启翻页声音');
+  button.classList.toggle('is-on', soundEnabled);
+  button.querySelector('span').textContent = soundEnabled ? '声音开' : '静音';
+}
+function toggleSound(button) {
+  soundEnabled = !soundEnabled;
+  storeSoundPreference();
+  updateSoundButton(button);
+  if (!soundEnabled) { stopPageTurnSound(); return; }
+  // A muted play inside the user's tap unlocks this audio element on iOS/WebView.
+  pageTurnAudio.muted = true;
+  const unlock = pageTurnAudio.play();
+  stopPageTurnSound();
+  pageTurnAudio.muted = false;
+  if (unlock) unlock.catch(() => {});
+}
 function preload(i) { if (pages[i]) { const x=new Image(); x.src=pages[i].src; } }
 const links = {
   'COVER': [[0,0,100,100,'DIR-001','进入全书主目录']],
@@ -105,7 +142,7 @@ function renderHotspots(p) {
   if(p.id==='COVER') items=[];
   items.forEach(([x,y,w,h,target,label],itemIndex)=>{const b=document.createElement('button');b.className='hotspot';if(p.id==='SEC-HC'&&itemIndex>=4)b.classList.add('hc-lower-entry');b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label',label);if(p.id!=='SEC-JZ'&&p.id!=='BRANDS'&&label&&label.includes('进入')){const t=document.createElement('span');t.className='pulse-link';t.innerHTML='进入 <span class="pulse-arrow">→</span>';b.append(t)}b.onclick=()=>{if(target==='@tel'){location.href='tel:03122161615';return}if(target.startsWith('@asset:')){window.open('assets/'+encodeURIComponent(target.slice(7)),'_blank');return}show(byId[target])};hotspots.append(b);});
   const ids=productImages[p.id];if(ids){const pos=productPositions[p.id]||(p.id==='JZ-P008'?[[7.4,31.8,40.9,33.9],[51.7,31.8,40.9,33.9]]:productLayout[ids.length]);ids.forEach((n,i)=>{const [x,y,w,h]=pos[i];const b=document.createElement('button');b.className='hotspot product-hotspot';b.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${h}%`;b.setAttribute('aria-label','点击放大产品图片 '+n);b.onclick=e=>{e.stopPropagation();openLightbox('assets/products/IMG_'+n+'.jpg','真实产品图片 '+n)};hotspots.append(b)})}
-  if(p.id==='COVER'){const b=document.createElement('button');b.className='cover-pulse';b.textContent='进入全书主目录';b.onclick=()=>show(byId['DIR-001']);hotspots.append(b)}
+  if(p.id==='COVER'){const sound=document.createElement('button');sound.className='sound-toggle';sound.type='button';sound.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="speaker" d="M4 9v6h4l5 4V5L8 9H4z"/><path class="waves" d="M16 8.2c1 .9 1.5 2.2 1.5 3.8s-.5 2.9-1.5 3.8M18.6 5.7c1.7 1.6 2.6 3.7 2.6 6.3s-.9 4.7-2.6 6.3"/><path class="mute" d="m16.5 9 5 6m0-6-5 6"/></svg><span></span>';updateSoundButton(sound);sound.onclick=e=>{e.stopPropagation();toggleSound(sound)};hotspots.append(sound);const b=document.createElement('button');b.className='cover-pulse';b.textContent='进入全书主目录';b.onclick=()=>show(byId['DIR-001']);hotspots.append(b)}
   if(p.id==='ENT-MARKET'){const b=document.createElement('span');b.className='market-pulse';b.textContent='查看品牌与产品';hotspots.append(b)}
   if(p.id==='SEC-JZ'){const t=document.createElement('div');t.className='choose-product-tip';t.innerHTML='<span>☝</span><strong>点击方框选择产品</strong>';hotspots.append(t)}
   if(ids){const t=document.createElement('div');t.className='product-zoom-tip'+(p.id==='JZ-P001'?' page6-tip':'');t.textContent='点击图片可放大';hotspots.append(t)}
@@ -114,7 +151,9 @@ function renderHotspots(p) {
 }
 let loadTimer;
 function show(i, push=true) {
-  current=Math.max(0,Math.min(pages.length-1,i)); const p=pages[current]; clearTimeout(loadTimer); loading.hidden=false; loading.textContent='正在加载…'; loading.onclick=null; image.classList.remove('ready');
+  const next=Math.max(0,Math.min(pages.length-1,i));
+  if(next!==current) playPageTurnSound();
+  current=next; const p=pages[current]; clearTimeout(loadTimer); loading.hidden=false; loading.textContent='正在加载…'; loading.onclick=null; image.classList.remove('ready');
   const done=()=>{clearTimeout(loadTimer);loading.hidden=true;loading.onclick=null;image.classList.add('ready')};
   const retry=()=>{loading.textContent='正在重新加载…';image.src=p.src+(p.src.includes('?')?'&':'?')+'retry='+Date.now()};
   image.onload=done; image.onerror=()=>{clearTimeout(loadTimer);loading.hidden=false;loading.textContent='图片加载失败，点击重试';loading.onclick=retry}; image.src=p.src; image.alt=p.title;
@@ -143,6 +182,7 @@ document.querySelector('#lightboxClose').onclick=closeLightbox;lightbox.onclick=
 document.querySelector('#nextBtn').onclick=()=>show(current+1); document.querySelector('#prevTap').onclick=()=>show(current-1);
 document.querySelector('#nextTap').onclick=()=>show(current+1); document.querySelector('#search').oninput=e=>buildToc(e.target.value);
 addEventListener('hashchange',()=>show(byId[location.hash.slice(1)]??current,false));
+addEventListener('pagehide',stopPageTurnSound);
 let sx=0;document.querySelector('#viewer').addEventListener('touchstart',e=>sx=e.changedTouches[0].clientX,{passive:true});
 document.querySelector('#viewer').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>60)show(current+(dx<0?1:-1));},{passive:true});
 buildToc(); show(current,false); if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});
